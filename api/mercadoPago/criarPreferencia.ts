@@ -25,6 +25,11 @@ export async function criarPreferenciaRifa() {
                 pending: `${FRONTEND_URL}/pagamento-pendente`,
                 failure: `${FRONTEND_URL}/pagamento-recusado`,
             },
+
+            payment_methods: {
+                excluded_payment_methods: [{ id: "bolbradesco" }]
+            },
+
             auto_return: "approved",
             statement_descriptor: "GATIL IRMA FRANCISCA",
         },
