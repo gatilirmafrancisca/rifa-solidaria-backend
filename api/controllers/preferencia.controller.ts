@@ -1,7 +1,9 @@
-import {type Request, type Response} from "express";
+import {type NextFunction, type Request, type Response} from "express";
 import { criarPreferenciaRifa } from "../mercadoPago/criarPreferencia.js";
+import { confirmarNumeroRifa } from "../services/pagamento.service.js";
 import Rifa from "../models/Rifa.js";
 import * as RifaTypes from "../types/rifa.types.js";
+import type { AuthenticatedRequest } from "../middlewares/token.middleware.js";
 
 
 export const getPreferencia = async(req: Request, res: Response) => {
@@ -16,5 +18,18 @@ export const getPreferencia = async(req: Request, res: Response) => {
  
     const preferencia = await criarPreferenciaRifa();
     res.json({ initPoint: preferencia.init_point });
+
+}
+
+export const confirmarNumero = async(req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+
+    try {
+
+        const resposta = await confirmarNumeroRifa(req.paymentId!, req.body);
+        return res.status(resposta.status).json({ message: resposta.message, data: resposta.data });
+
+    } catch (error) {
+        next(error);
+    }
 
 }

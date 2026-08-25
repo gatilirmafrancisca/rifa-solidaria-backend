@@ -1,6 +1,14 @@
 import { type Request, type Response } from "express";
 import { verificarAssinaturaMP } from "../mercadoPago/verificarAssinatura.js";
-import { processarNotificacaoPagamento } from "../services/mercadoPago.service.js";
+import { processarNotificacaoPagamento, mapearStatusMP } from "../services/mercadoPago.service.js";
+import { registrarPagamentoRifa } from "../services/pagamento.service.js";
+import Rifa, { type IRifa } from "../models/Rifa.js";
+import { buscarPagamento } from "../mercadoPago/buscarPagamento.js";
+import * as RifaTypes from "../types/rifa.types.js";
+import { ConflictError } from "../utils/errors.js";
+import jwt from "jsonwebtoken";
+
+const { sign } = jwt;
 
 export const WebhookController = async (req: Request, res: Response) => {
     const assinaturaValida = verificarAssinaturaMP({
@@ -11,17 +19,65 @@ export const WebhookController = async (req: Request, res: Response) => {
     });
 
     if (!assinaturaValida) {
-        // Única resposta deste caminho — ok, mesmo que "res.json" apareça
-        // de novo em algum outro branch, aqui a função já termina.
         return res.status(401).json({ message: "Assinatura inválida." });
     }
 
-    // Ack imediato — a partir daqui, res já está finalizado. Nenhum
-    // código depois deste ponto pode chamar res.* de novo.
     res.status(200).end();
-
-    // Processamento acontece depois do ack, sem bloquear a resposta ao
-    // Mercado Pago. Erros são só logados dentro do próprio service —
-    // não há mais como (nem por que) responder ao cliente por eles.
     void processarNotificacaoPagamento(req.body);
 };
+
+export const VerificarPagamentoController = async (req: Request, res: Response) => {
+
+    const paymentId = String(req.query.payment_id ?? "");
+    if (!paymentId) return res.status(400).json({ message: "payment_id ausente" });
+
+    let pagamento = await Rifa.findOne({ paymentId });
+
+    if (!pagamento) {
+        
+        const dadoReal = await buscarPagamento(paymentId);
+        if (dadoReal.status !== "approved") {
+            return res.status(402).json({ message: "Pagamento não aprovado." });
+        }
+
+        const dadosCriacao: Partial<Omit<IRifa, "paymentId">> = {
+            status: mapearStatusMP(dadoReal.status!),
+            amount: RifaTypes.TICKET_PRICE_BRL,
+            ...(dadoReal.payer?.email ? { email: dadoReal.payer.email } : {}),
+        };
+
+         try {
+            
+            await registrarPagamentoRifa(paymentId, dadosCriacao);
+            pagamento = await Rifa.findOne({ paymentId });
+
+        } catch (error) {
+            if (error instanceof ConflictError) {
+
+                pagamento = await Rifa.findOne({ paymentId });
+            } else {
+                
+                throw error;
+            }
+        }
+       
+    }
+    
+    if (!pagamento) {
+        return res.status(500).json({ message: "Não foi possível confirmar o pagamento agora." });
+    }
+
+    if (pagamento.status !== "confirmado") {
+      return res.status(402).json({ message: "Pagamento não aprovado." });
+    }
+    if (pagamento.claimedNumber !== null) {
+      return res.status(409).json({ message: "Este pagamento já escolheu um número." });
+    }
+
+    const token = sign({ paymentId }, process.env.JWT_SECRET!, {
+      expiresIn: "30m",
+    });
+
+    res.json({ token });
+
+}

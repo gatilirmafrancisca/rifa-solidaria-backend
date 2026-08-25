@@ -49,3 +49,5 @@ Thumbs.db
 .parcel-cache/
 node-repl-history
 .pnp.*
+
+scripts/rifas_legado.json

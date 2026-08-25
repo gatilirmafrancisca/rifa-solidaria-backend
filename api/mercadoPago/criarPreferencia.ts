@@ -5,6 +5,7 @@ function getClient() {
 }
 
 const FRONTEND_URL = process.env.FRONTEND_URL!;
+const usaAutoReturn = FRONTEND_URL.startsWith("https://");
 
 export async function criarPreferenciaRifa() {
     const preference = new Preference(getClient());
@@ -30,7 +31,7 @@ export async function criarPreferenciaRifa() {
                 excluded_payment_methods: [{ id: "bolbradesco" }]
             },
 
-            auto_return: "approved",
+            ...(usaAutoReturn ? { auto_return: "approved" as const } : {}),
             statement_descriptor: "GATIL IRMA FRANCISCA",
         },
     });
