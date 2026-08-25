@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as preferenciaController from "../controllers/preferencia.controller.js";
+import * as preferenciaController from "../controllers/rifa.controller.js";
 import { requirePaymentToken } from "../middlewares/token.middleware.js";
 
 const router = Router();

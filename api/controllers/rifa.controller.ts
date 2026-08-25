@@ -1,6 +1,6 @@
 import {type NextFunction, type Request, type Response} from "express";
 import { criarPreferenciaRifa } from "../mercadoPago/criarPreferencia.js";
-import { confirmarNumeroRifa } from "../services/pagamento.service.js";
+import { confirmarNumeroRifa } from "../services/rifa.service.js";
 import Rifa from "../models/Rifa.js";
 import * as RifaTypes from "../types/rifa.types.js";
 import type { AuthenticatedRequest } from "../middlewares/token.middleware.js";

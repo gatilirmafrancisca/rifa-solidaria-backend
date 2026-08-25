@@ -5,7 +5,7 @@ import cors from "cors";
 import database from "./database/configdb.js";
 import { errorHandler } from "./middlewares/errors.middleware.js";
 import mercadoPagoRoute from "./routes/mercadoPago.route.js";
-import preferenciaRoute from "./routes/preferencia.route.js";
+import preferenciaRoute from "./routes/rifa.route.js";
 
 const app = express();
 database.connect();

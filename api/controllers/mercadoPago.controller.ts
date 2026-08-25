@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 import { verificarAssinaturaMP } from "../mercadoPago/verificarAssinatura.js";
 import { processarNotificacaoPagamento, mapearStatusMP } from "../services/mercadoPago.service.js";
-import { registrarPagamentoRifa } from "../services/pagamento.service.js";
+import { registrarPagamentoRifa } from "../services/rifa.service.js";
 import Rifa, { type IRifa } from "../models/Rifa.js";
 import { buscarPagamento } from "../mercadoPago/buscarPagamento.js";
 import * as RifaTypes from "../types/rifa.types.js";
