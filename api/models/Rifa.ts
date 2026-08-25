@@ -23,8 +23,13 @@ const RifaSchema: Schema<IRifa> = new mongoose.Schema({
     phone: { type: String, default: null },
     email: { type: String, default: null },
 
-    claimedNumber: { type: Number, default: null, unique: true, sparse: true },
+    claimedNumber: { type: Number, default: null },
 });
+
+RifaSchema.index(
+    { claimedNumber: 1 },
+    { unique: true, partialFilterExpression: { claimedNumber: { $type: "number" } } }
+);
 
 const Rifa: Model<IRifa> = model("Rifa", RifaSchema);
 export default Rifa;

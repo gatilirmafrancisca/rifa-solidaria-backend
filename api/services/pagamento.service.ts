@@ -25,6 +25,8 @@ export const registrarPagamentoRifa = async (
         const dadosRifa = new Rifa(dadosNormalizados);
         await dadosRifa.save();
 
+        console.log("Novo Cadastro Registrado: ", dadosRifa._id);
+
         return { status: 201, message: "Pagamento registrado.", data: { id: dadosRifa._id } };
     } catch (error: any) {
         if (error?.code === 11000) {
