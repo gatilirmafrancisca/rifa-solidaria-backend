@@ -5,7 +5,7 @@ import { registrarPagamentoRifa } from "./pagamento.service.js";
 import { ConflictError } from "../utils/errors.js";
 
 
-function mapearStatusMP(statusMP: string): RifaTypes.StatusRifaType {
+export const mapearStatusMP = (statusMP: string): RifaTypes.StatusRifaType => {
     const mapa: Record<string, RifaTypes.StatusRifaType> = {
         approved: "confirmado",
         pending: "pendente",

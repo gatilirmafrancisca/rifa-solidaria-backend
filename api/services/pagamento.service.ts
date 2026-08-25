@@ -15,8 +15,10 @@ import type ResponseType from "../types/response.type.js";
  * disponível). name/phone/claimedNumber nascem null.
  */
 export const registrarPagamentoRifa = async (
+
     paymentId: string,
     dadosBase: Partial<Omit<IRifa, "paymentId">>
+
 ): Promise<ResponseType> => {
     try {
         const dadosNormalizados = normalizarDadosCriacaoRifa({ ...dadosBase, paymentId });
@@ -41,10 +43,7 @@ export const registrarPagamentoRifa = async (
 };
 
 
-export const confirmarNumeroRifa = async (
-    paymentId: string,
-    data: Record<string, any>
-): Promise<ResponseType> => {
+export const confirmarNumeroRifa = async (paymentId: string, data: Record<string, any>): Promise<ResponseType> => {
     try {
         const dadosNormalizados = normalizarDadosConfirmacaoRifa(data);
         await validarConfirmacaoRifa(dadosNormalizados);
@@ -78,9 +77,7 @@ export const confirmarNumeroRifa = async (
         };
     } catch (error: any) {
         if (error?.code === 11000) {
-            // claimedNumber é unique+sparse no schema — isso pega o caso
-            // de dois paymentIds diferentes tentando o mesmo número ao
-            // mesmo tempo (corrida que o filtro acima sozinho não cobre).
+
             throw new ConflictError("Este número já foi escolhido por outro participante.");
         }
 

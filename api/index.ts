@@ -15,8 +15,8 @@ app.use(cors(
   { origin: process.env.FRONTEND_URL, credentials: true }
 ));
 
-app.use("/webhooks/mercadopago", mercadoPagoRoute);
-app.use("/api/rifa/criar-pagamento", preferenciaRoute);
+app.use("/mercadopago", mercadoPagoRoute);
+app.use("/api/rifa", preferenciaRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send({ message: "App Working" });
