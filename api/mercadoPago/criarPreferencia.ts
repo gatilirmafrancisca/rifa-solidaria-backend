@@ -26,6 +26,17 @@ export const mercadoPagoPreferenceClient = {
                     pending: `${FRONTEND_URL}/pagamento-pendente`,
                     failure: `${FRONTEND_URL}/pagamento-recusado`,
                 },
+
+                payment_methods: {
+                    installments: 2,
+
+                    excluded_payment_types: [
+                    {
+                        id: "ticket",
+                    },
+                ],
+                },
+
                 ...(usaAutoReturn ? { auto_return: "approved" as const } : {}),
                 statement_descriptor: "GATIL IRMA FRANCISCA",
             },
