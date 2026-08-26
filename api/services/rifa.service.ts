@@ -7,6 +7,7 @@ import {
     validarConfirmacaoRifa,
 } from "../utils/rifavalidar.js";
 import type ResponseType from "../types/response.type.js";
+import { enviarEmailConfirmacao } from "./email.service.js";
 
 
 /**
@@ -70,6 +71,17 @@ export const confirmarNumeroRifa = async (paymentId: string, data: Record<string
                 : new NotFoundError("Pagamento não encontrado ou ainda não processado.");
         }
 
+        // Dispara depois da confirmação já estar salva — se o e-mail
+        // falhar, o número continua reservado corretamente. A falha só
+        // vira um "reenviar" manual depois, nunca desfaz a reserva.
+        if (rifaAtualizada.email) {
+            void enviarEmailConfirmacao({
+                name: rifaAtualizada.name ?? "participante",
+                email: rifaAtualizada.email,
+                claimedNumber: rifaAtualizada.claimedNumber!,
+            });
+        }
+
         return {
             status: 200,
             message: "Número confirmado.",
@@ -82,6 +94,20 @@ export const confirmarNumeroRifa = async (paymentId: string, data: Record<string
         }
 
         console.error("confirmarNumeroRifa error:", error);
+        throw error;
+    }
+};
+
+export const getAllRifasService = async (): Promise<ResponseType> => {
+
+    try {
+
+        const rifas = await Rifa.find({ claimedNumber: { $ne: null } }).distinct("claimedNumber");
+        return { status: 200, message: "Rifas encontradas.", data: rifas };
+
+    } catch (error: any) {
+
+        console.error("getAllRifasService error:", error);
         throw error;
     }
 };

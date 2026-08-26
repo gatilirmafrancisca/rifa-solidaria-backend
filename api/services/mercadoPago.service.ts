@@ -1,7 +1,7 @@
 import * as RifaTypes from "../types/rifa.types.js";
 import type { IRifa } from "../models/Rifa.js";
 import { buscarPagamento } from "../mercadoPago/buscarPagamento.js";
-import { registrarPagamentoRifa } from "./pagamento.service.js";
+import { registrarPagamentoRifa } from "./rifa.service.js";
 import { ConflictError } from "../utils/errors.js";
 
 
