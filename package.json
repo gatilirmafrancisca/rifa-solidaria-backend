@@ -1,6 +1,6 @@
 {
   "name": "rifa-solidaria-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "api/index.js",
   "author": "daniel-vasconcelos",
@@ -11,7 +11,7 @@
     "start": "node api/index.ts",
     "start:database": "docker compose up -d",
     "generate-secret-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
-    "tests": "tsx node_modules/@cucumber/cucumber/bin/cucumber-js"
+    "test:bdd": "tsx node_modules/@cucumber/cucumber/bin/cucumber-js"
   },
   "dependencies": {
     "@react-email/components": "^1.0.12",
