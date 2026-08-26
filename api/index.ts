@@ -5,7 +5,7 @@ import cors from "cors";
 import database from "./database/configdb.js";
 import { errorHandler } from "./middlewares/errors.middleware.js";
 import mercadoPagoRoute from "./routes/mercadoPago.route.js";
-import preferenciaRoute from "./routes/rifa.route.js";
+import rifaRoute from "./routes/rifa.route.js";
 
 const app = express();
 database.connect();
@@ -16,7 +16,7 @@ app.use(cors(
 ));
 
 app.use("/mercadopago", mercadoPagoRoute);
-app.use("/api/rifa", preferenciaRoute);
+app.use("/api/rifa", rifaRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send({ message: "App Working" });
