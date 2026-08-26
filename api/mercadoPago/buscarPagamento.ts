@@ -1,12 +1,20 @@
-// src/mercadoPago/buscarPagamento.ts
 import { MercadoPagoConfig, Payment } from "mercadopago";
 
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN!,
-});
+function getClient() {
+    return new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! });
+}
+
+// Objeto mutável de propósito — é isso que permite os testes
+// substituírem a chamada real por uma fake (ver
+// tests/support/mercadoPagoFake.ts), sem precisar de um framework de
+// mocking de módulos ESM.
+export const mercadoPagoClient = {
+    async buscarPagamento(paymentId: string) {
+        const payment = new Payment(getClient());
+        return payment.get({ id: paymentId });
+    },
+};
 
 export async function buscarPagamento(paymentId: string) {
-  const payment = new Payment(client);
-  return payment.get({ id: paymentId });
-  // .status, .transaction_amount, .payer.email, .external_reference etc.
+    return mercadoPagoClient.buscarPagamento(paymentId);
 }
