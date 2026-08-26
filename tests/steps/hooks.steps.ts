@@ -1,6 +1,7 @@
 import { Before, After, BeforeAll } from "@cucumber/cucumber";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import Rifa from "../../api/models/Rifa.js";
 import { resetarFakesMercadoPago } from "../support/mercadoPagoFake.js";
 
 BeforeAll(function () {
@@ -19,6 +20,14 @@ let mongod: MongoMemoryServer;
 Before(async function () {
     mongod = await MongoMemoryServer.create();
     await mongoose.connect(mongod.getUri());
+
+    // Mongoose cria índices em segundo plano, de forma assíncrona, logo
+    // após a conexão abrir — sem esperar isso terminar, existe uma
+    // janela real (mais visível em CI do que localmente) onde o índice
+    // único de claimedNumber ainda não existe, e testes de corrida
+    // conseguem passar dos dois lados por pura sorte de timing.
+    await Rifa.init();
+
     resetarFakesMercadoPago();
 });
 
